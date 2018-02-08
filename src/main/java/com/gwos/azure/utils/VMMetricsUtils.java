@@ -6,7 +6,7 @@ import com.microsoft.azure.management.monitor.Metric;
 import com.microsoft.azure.management.monitor.MetricDefinition;
 import com.microsoft.azure.management.monitor.MetricValue;
 
-public class MetricsUtils {
+public class VMMetricsUtils {
 
 	public static void printMetricDefinition(MetricDefinition metricDefinition) {
         StringBuilder stMetricDefinition = new StringBuilder().append("\nMetric Definition ");
@@ -18,7 +18,7 @@ public class MetricsUtils {
         System.out.println(stMetricDefinition.toString());
 	}
 	
-    public static void printVMMetricMetadata(Metric metric) {
+    public static void printMetricMetadata(Metric metric) {
     	
         StringBuilder stMetricMetadata = new StringBuilder().append("\n\tMetric Metadata ");
 	    stMetricMetadata.append("\n\tId = ").append(metric.id());
@@ -29,7 +29,7 @@ public class MetricsUtils {
         System.out.println(stMetricMetadata.toString());
     }
 	
-    public static void printVMMetrics(List<MetricValue> metricValues) {
+    public static void printMetrics(List<MetricValue> metricValues) {
     	
         StringBuilder stMetricValues = new StringBuilder().append("\n\tMetric Values ");
         int idx = 0;

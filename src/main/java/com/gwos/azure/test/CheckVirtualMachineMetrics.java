@@ -5,8 +5,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 
-import com.gwos.azure.utils.MetricsUtils;
-import com.gwos.azure.utils.Utils;
+import com.gwos.azure.utils.VMMetricsUtils;
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.compute.VirtualMachine;
@@ -19,33 +18,6 @@ import com.microsoft.azure.management.monitor.TimeSeriesElement;
 import com.microsoft.rest.LogLevel;
 
 public class CheckVirtualMachineMetrics {
-
-	public static boolean runSample(Azure azure) {
-
-		try {
-			// =============================================================
-			// List virtual machines in the resource group
-			String resourceGroupName = "GWOSGROUP"; // My Ubuntu VM is created
-													// under this group
-			System.out.println("Printing list of VMs =======");
-			for (VirtualMachine virtualMachine : azure.virtualMachines().listByResourceGroup(resourceGroupName)) {
-				Utils.print(virtualMachine);
-			}
-
-			System.out.println("----------------");
-			PagedList<VirtualMachine> vms = azure.virtualMachines().list();
-			for (VirtualMachine vm : vms) {
-				System.out.println("-- vm = " + vm.computerName());
-			}
-
-			return true;
-		} catch (Exception f) {
-			f.printStackTrace();
-		} finally {
-			// TODO: nothing here
-		}
-		return false;
-	}
 
 	public static boolean runMetrics(Azure azure) {
 
@@ -60,10 +32,9 @@ public class CheckVirtualMachineMetrics {
 			System.out.println("----------------");
 			PagedList<VirtualMachine> vms = azure.virtualMachines().list();
 			for (VirtualMachine vm : vms) {
-//				System.out.println("-- vm = " + vm.computerName());			
 				MetricDefinitions mds = azure.metricDefinitions();
 				for (MetricDefinition m : mds.listByResource(vm.id())) {
-					MetricsUtils.printMetricDefinition(m);
+					VMMetricsUtils.printMetricDefinition(m);
 					//System.out.println(m.resourceId());
 					
 			        // Query resource metrics
@@ -74,11 +45,11 @@ public class CheckVirtualMachineMetrics {
 			                .execute();
 			        
 			        for (Metric metric : metrics.metrics()) {
-			        	MetricsUtils.printVMMetricMetadata(metric);
+			        	VMMetricsUtils.printMetricMetadata(metric);
 
 			        	List<TimeSeriesElement> tses = metric.timeseries();
 			        	for (TimeSeriesElement tse : tses) {
-			        		MetricsUtils.printVMMetrics(tse.data());
+			        		VMMetricsUtils.printMetrics(tse.data());
 			        	}
 			        }
 
@@ -102,10 +73,6 @@ public class CheckVirtualMachineMetrics {
 			final File credFile = new File(System.getenv("AZURE_AUTH_LOCATION"));
 
 			Azure azure = Azure.configure().withLogLevel(LogLevel.BASIC).authenticate(credFile).withDefaultSubscription();
-
-			// Print selected subscription
-			System.out.println("Selected subscription: " + azure.subscriptionId());
-			//runSample(azure);
 			
 			// Print selected subscription
 			System.out.println("Selected subscription: " + azure.subscriptionId());
