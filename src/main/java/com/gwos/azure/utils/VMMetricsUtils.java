@@ -37,6 +37,7 @@ public class VMMetricsUtils {
         	stMetricValues.append("\n\tMetric Value - " + idx++);
         	stMetricValues.append("\n\t\tAverage = ").append(metricValue.average());
         	stMetricValues.append("\n\t\tCount = ").append(metricValue.count());
+        	stMetricValues.append("\n\t\tTotal = ").append(metricValue.total());
         	stMetricValues.append("\n\t\tTimeStamp = ").append(metricValue.timeStamp().toString());
         }
         
