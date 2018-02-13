@@ -1,0 +1,7 @@
+{
+	"$schema":"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#", 
+	"contentVersion":"1.0.0.0",
+  	"parameters":{"storageAccounts_cs42d7882963e5ax4e5dx801_name":{"defaultValue":"cs42d7882963e5ax4e5dx801","type":"String"}},
+  	"variables":{},
+  	"resources":[{"comments":"Generalized from resource: '/subscriptions/2d788296-3e5a-4e5d-801b-70560c676ed6/resourceGroups/cloud-shell-storage-westus/providers/Microsoft.Storage/storageAccounts/cs42d7882963e5ax4e5dx801'.","type":"Microsoft.Storage/storageAccounts","sku":{"name":"Standard_LRS","tier":"Standard"},"kind":"Storage","name":"[parameters('storageAccounts_cs42d7882963e5ax4e5dx801_name')]","apiVersion":"2017-10-01","location":"westus","tags":{"ms-resource-usage":"azure-cloud-shell"},"scale":null,"properties":{"networkAcls":{"bypass":"AzureServices","virtualNetworkRules":[],"ipRules":[],"defaultAction":"Allow"},"supportsHttpsTrafficOnly":false,"encryption":{"services":{"file":{"enabled":true},"blob":{"enabled":true}},"keySource":"Microsoft.Storage"}},"dependsOn":[]}]
+}
