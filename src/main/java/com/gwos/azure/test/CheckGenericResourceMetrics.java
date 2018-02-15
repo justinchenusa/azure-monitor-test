@@ -12,10 +12,10 @@ import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.monitor.MetricCollection;
 import com.microsoft.azure.management.monitor.MetricDefinition;
 import com.microsoft.azure.management.monitor.ResultType;
-import com.microsoft.azure.management.storage.StorageAccount;
+import com.microsoft.azure.management.resources.GenericResource;
 import com.microsoft.rest.LogLevel;
 
-public class CheckStorageMetrics {
+public class CheckGenericResourceMetrics {
 	public static boolean runMetrics02(Azure azure) {		
         //DateTime recordDateTime = DateTime.parse("2018-01-24T00:07:40.350Z");
 		DateTime recordDateTime = DateTime.now();
@@ -23,12 +23,24 @@ public class CheckStorageMetrics {
 		try {
 			// =============================================================
 			// List virtual machines in the resource group
-			String resourceGroupName = "cloud-shell-storage-westus"; // Storage account is under this group
+			String resourceGroupName = "GWOSGROUP"; // My Ubuntu VM is created under this group
 			
 			System.out.println("----------------");
-			PagedList<StorageAccount> storageActs = azure.storageAccounts().listByResourceGroup(resourceGroupName);
-			for (StorageAccount storageAct : storageActs) {
-				List<MetricDefinition> listMetricDefinitionmds = azure.metricDefinitions().listByResource(storageAct.id());
+			PagedList<GenericResource> genericResources = azure.genericResources().list();
+			for (GenericResource genericResource : genericResources) {
+				System.out.println("---------- Resource MetaData ----------");
+				System.out.println("Api Version: " + genericResource.apiVersion());
+				System.out.println("Key: " + genericResource.key());
+				System.out.println("Name: " + genericResource.name());
+				System.out.println("ParentResourcePath: " + genericResource.parentResourcePath());
+				System.out.println("RegionName: " + genericResource.regionName());
+				System.out.println("ResourceGroupName: " + genericResource.resourceGroupName());
+				System.out.println("ResourceProviderNamespace: " + genericResource.resourceProviderNamespace());
+				System.out.println("ResourceType: " + genericResource.resourceType());
+				System.out.println("Type: " + genericResource.type());
+				System.out.println("---------------------------------------");
+				
+				List<MetricDefinition> listMetricDefinitionmds = azure.metricDefinitions().listByResource(genericResource.id());
 				for (MetricDefinition metricDefinition : listMetricDefinitionmds) {					
 			        // Query resource metrics
 			        MetricCollection metricCollection = metricDefinition.defineQuery()
@@ -39,9 +51,9 @@ public class CheckStorageMetrics {
 			                .withResultType(ResultType.DATA)
 			                .execute();
 
-			        VMMetricsUtils.printMetricCollection(metricCollection, storageAct.id());
+			        VMMetricsUtils.printMetricCollection(metricCollection, genericResource.id());
 				}
-				
+
 			}
 
 			return true;
@@ -52,7 +64,7 @@ public class CheckStorageMetrics {
 		}
 		return false;
 	}
-		
+	
 	public static void main(String[] args) {
 		try {
 			// https://docs.microsoft.com/en-us/java/azure/java-sdk-azure-authenticate

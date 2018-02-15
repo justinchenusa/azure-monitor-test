@@ -1,6 +1,5 @@
 package com.gwos.azure.test;
 
-import java.io.File;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -10,7 +9,6 @@ import com.microsoft.azure.AzureEnvironment;
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.credentials.ApplicationTokenCredentials;
 import com.microsoft.azure.management.Azure;
-import com.microsoft.azure.management.cosmosdb.CosmosDBAccount;
 import com.microsoft.azure.management.monitor.Metric;
 import com.microsoft.azure.management.monitor.MetricCollection;
 import com.microsoft.azure.management.monitor.MetricDefinition;
