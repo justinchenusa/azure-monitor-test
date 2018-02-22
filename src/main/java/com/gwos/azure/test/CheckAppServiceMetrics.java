@@ -28,6 +28,7 @@ public class CheckAppServiceMetrics {
 			
 			PagedList<WebApp> webApps = azure.webApps().list();
 			for (WebApp webApp : webApps) {
+				System.out.println("Web App AvailablityState: " + webApp.availabilityState().name());
 				List<MetricDefinition> metricDefinitions = azure.metricDefinitions().listByResource(webApp.id());
 				for (MetricDefinition metricDefinition : metricDefinitions) {		
 					AggregationType aggregationType = metricDefinition.primaryAggregationType();
