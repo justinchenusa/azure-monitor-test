@@ -48,7 +48,7 @@ public class HealthTest {
         PagedList<WebApp> webapps = azure.webApps().list();
         for (WebApp webApp : webapps) {
             System.out.println(webApp.name());
-            webApp.state();
+            String webAppState = webApp.state();
             SiteAvailabilityState state = webApp.availabilityState();
             listMetrics(definitions, webApp.id());
         }

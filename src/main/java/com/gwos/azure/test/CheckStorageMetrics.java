@@ -28,8 +28,8 @@ public class CheckStorageMetrics {
 			System.out.println("----------------");
 			PagedList<StorageAccount> storageActs = azure.storageAccounts().listByResourceGroup(resourceGroupName);
 			for (StorageAccount storageAct : storageActs) {
-				List<MetricDefinition> listMetricDefinitionmds = azure.metricDefinitions().listByResource(storageAct.id());
-				for (MetricDefinition metricDefinition : listMetricDefinitionmds) {					
+				List<MetricDefinition> metricDefinitions = azure.metricDefinitions().listByResource(storageAct.id());
+				for (MetricDefinition metricDefinition : metricDefinitions) {					
 			        // Query resource metrics
 			        MetricCollection metricCollection = metricDefinition.defineQuery()
 			                .startingFrom(recordDateTime.minusMinutes(10))	// last 10 minutes

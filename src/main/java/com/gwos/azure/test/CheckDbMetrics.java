@@ -31,8 +31,8 @@ public class CheckDbMetrics {
 			System.out.println("----------------");
 			PagedList<CosmosDBAccount> cmosDbActs = azure.cosmosDBAccounts().list();
 			for (CosmosDBAccount cmosDbAct : cmosDbActs) {
-				List<MetricDefinition> listMetricDefinitionmds = azure.metricDefinitions().listByResource(cmosDbAct.id());
-				for (MetricDefinition metricDefinition : listMetricDefinitionmds) {					
+				List<MetricDefinition> metricDefinitions = azure.metricDefinitions().listByResource(cmosDbAct.id());
+				for (MetricDefinition metricDefinition : metricDefinitions) {					
 			        // Query resource metrics
 			        MetricCollection metricCollection = metricDefinition.defineQuery()
 			                .startingFrom(recordDateTime.minusMinutes(10))	// last 10 minutes
@@ -110,7 +110,7 @@ public class CheckDbMetrics {
 			        "{Tenant Id}",	
 			        "{Client Secret}", 	
 			        AzureEnvironment.AZURE);
-
+			
 			Azure azure = Azure
 			        .configure()
 			        .withLogLevel(LogLevel.BASIC)

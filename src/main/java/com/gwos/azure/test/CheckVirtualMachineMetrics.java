@@ -9,7 +9,9 @@ import com.microsoft.azure.AzureEnvironment;
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.credentials.ApplicationTokenCredentials;
 import com.microsoft.azure.management.Azure;
+import com.microsoft.azure.management.compute.InstanceViewStatus;
 import com.microsoft.azure.management.compute.VirtualMachine;
+import com.microsoft.azure.management.compute.VirtualMachineAgentInstanceView;
 import com.microsoft.azure.management.monitor.Metric;
 import com.microsoft.azure.management.monitor.MetricCollection;
 import com.microsoft.azure.management.monitor.MetricDefinition;
@@ -33,14 +35,18 @@ public class CheckVirtualMachineMetrics {
 			System.out.println("----------------");
 			PagedList<VirtualMachine> vms = azure.virtualMachines().list();
 			for (VirtualMachine vm : vms) {
-				List<MetricDefinition> listMetricDefinitionmds = azure.metricDefinitions().listByResource(vm.id());
-				for (MetricDefinition metricDefinition : listMetricDefinitionmds) {					
+				VMMetricsUtils.printVirtualMachine(vm);
+				List<InstanceViewStatus> vmStatuses = vm.instanceView().statuses();
+				VirtualMachineAgentInstanceView vmAgent = vm.instanceView().vmAgent();
+				List<InstanceViewStatus> vmAgentStatuses = vmAgent.statuses();
+				List<MetricDefinition> metricDefinitions = azure.metricDefinitions().listByResource(vm.id());
+				for (MetricDefinition metricDefinition : metricDefinitions) {					
 			        // Query resource metrics
 			        MetricCollection metricCollection = metricDefinition.defineQuery()
-			                .startingFrom(recordDateTime.minusMinutes(10))	// last 10 minutes
+			                .startingFrom(recordDateTime.minusMinutes(5))	// last 10 minutes
 			                .endsBefore(recordDateTime)
                             //.withAggregation("Average")
-                            //.withInterval(Period.minutes(5))				// Commented to use 1 minutes interval by default
+                            //.withInterval(Period.minutes(5))				// Commented out to use 1 minute interval by default
 			                .withResultType(ResultType.DATA)
 			                .execute();
 
@@ -115,7 +121,7 @@ public class CheckVirtualMachineMetrics {
 			        "{Client Secret}", 	
 			        AzureEnvironment.AZURE);
 
-			Azure azure = Azure.configure().withLogLevel(LogLevel.BASIC).authenticate(credentials).withDefaultSubscription();
+			Azure azure = Azure.configure().withLogLevel(LogLevel.NONE).authenticate(credentials).withDefaultSubscription();
 			/*
 			// =============================================================
 			// Authenticate by a generated azure auth file configured in env. variable
