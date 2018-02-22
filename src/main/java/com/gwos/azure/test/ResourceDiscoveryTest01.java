@@ -1,6 +1,6 @@
 package com.gwos.azure.test;
 
-import com.microsoft.azure.AzureEnvironment;
+import com.gwos.azure.utils.AuthUtil;
 import com.microsoft.azure.credentials.ApplicationTokenCredentials;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.resources.ResourceGroup;
@@ -50,28 +50,14 @@ public class ResourceDiscoveryTest01 {
 	
 	public static void main(String[] args) {
 		try {
-			// https://docs.microsoft.com/en-us/java/azure/java-sdk-azure-authenticate
-			ApplicationTokenCredentials credentials = new ApplicationTokenCredentials(
-					"{Client Id}", 	
-			        "{Tenant Id}",	
-			        "{Client Secret}", 	
-			        AzureEnvironment.AZURE);
+//			final File credFile = AuthUtil.getCrendentialFile("AZURE_AUTH_LOCATION");
+//			Azure azure = Azure.configure().withLogLevel(LogLevel.NONE).authenticate(credFile).withDefaultSubscription();
 
-			Azure azure = Azure
-			        .configure()
-			        .withLogLevel(LogLevel.BASIC)
-			        .authenticate(credentials)
-			        //.withSubscription("{SubscriptionId}");
-			        .withDefaultSubscription();
-			/*
-			// =============================================================
-			// Authenticate by a generated azure auth file configured in env. variable
-			final File credFile = new File(System.getenv("AZURE_AUTH_LOCATION"));
+			ApplicationTokenCredentials credentials = AuthUtil.getTokenCredential();
+			Azure azure = Azure.configure().withLogLevel(LogLevel.BASIC).authenticate(credentials).withDefaultSubscription();
 
-			Azure azure = Azure.configure().withLogLevel(LogLevel.BASIC).authenticate(credFile).withDefaultSubscription();
-			*/
-			// Print selected subscription
 			System.out.println("Selected subscription: " + azure.subscriptionId());
+
 			runSample(azure);
 						
 		} catch (Exception e) {

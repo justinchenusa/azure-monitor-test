@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 
+import com.gwos.azure.utils.AuthUtil;
 import com.gwos.azure.utils.VMMetricsUtils;
-import com.microsoft.azure.AzureEnvironment;
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.credentials.ApplicationTokenCredentials;
 import com.microsoft.azure.management.Azure;
@@ -113,24 +113,14 @@ public class CheckVirtualMachineMetrics {
 	
 	public static void main(String[] args) {
 		try {
-			// https://docs.microsoft.com/en-us/java/azure/java-sdk-azure-authenticate#authenticate-with-an-applicationtokencredentials-object
-			// https://docs.microsoft.com/en-us/java/azure/java-sdk-azure-authenticate
-			ApplicationTokenCredentials credentials = new ApplicationTokenCredentials(
-					"{Client Id}", 	
-			        "{Tenant Id}",	
-			        "{Client Secret}", 	
-			        AzureEnvironment.AZURE);
+//			final File credFile = AuthUtil.getCrendentialFile("AZURE_AUTH_LOCATION");
+//			Azure azure = Azure.configure().withLogLevel(LogLevel.NONE).authenticate(credFile).withDefaultSubscription();
 
-			Azure azure = Azure.configure().withLogLevel(LogLevel.NONE).authenticate(credentials).withDefaultSubscription();
-			/*
-			// =============================================================
-			// Authenticate by a generated azure auth file configured in env. variable
-			final File credFile = new File(System.getenv("AZURE_AUTH_LOCATION"));
-
-			Azure azure = Azure.configure().withLogLevel(LogLevel.BASIC).authenticate(credFile).withDefaultSubscription();
-			*/
-			// Print selected subscription
+			ApplicationTokenCredentials credentials = AuthUtil.getTokenCredential();
+			Azure azure = Azure.configure().withLogLevel(LogLevel.BASIC).authenticate(credentials).withDefaultSubscription();
+			
 			System.out.println("Selected subscription: " + azure.subscriptionId());
+			
 			runMetrics02(azure);
 			
 		} catch (Exception e) {

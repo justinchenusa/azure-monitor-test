@@ -1,6 +1,6 @@
 package com.gwos.azure.test;
 
-import com.microsoft.azure.AzureEnvironment;
+import com.gwos.azure.utils.AuthUtil;
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.credentials.ApplicationTokenCredentials;
 import com.microsoft.azure.management.Azure;
@@ -13,11 +13,9 @@ import com.microsoft.azure.management.monitor.*;
 import com.microsoft.azure.management.sql.ServerMetric;
 import com.microsoft.azure.management.sql.SqlDatabase;
 import com.microsoft.azure.management.sql.SqlServer;
-import com.microsoft.azure.management.sql.SqlServer.Databases;
 import com.microsoft.rest.LogLevel;
 import org.joda.time.DateTime;
 
-import java.io.File;
 import java.util.List;
 
 public class HealthTest {
@@ -74,19 +72,16 @@ public class HealthTest {
             }
             //listMetrics(definitions, sqlServer.id());
         }
-
     }
-
-
 
     public static void main(String[] args) {
         try {
+//			final File credFile = AuthUtil.getCrendentialFile("AZURE_AUTH_LOCATION");
+//			Azure azure = Azure.configure().withLogLevel(LogLevel.NONE).authenticate(credFile).withDefaultSubscription();
 
-			// Authenticate by a generated azure auth file configured in env. variable
-			final File credFile = new File(System.getenv("AZURE_AUTH_LOCATION"));
-
-			Azure azure = Azure.configure().withLogLevel(LogLevel.NONE).authenticate(credFile).withDefaultSubscription();
-            // Print selected subscription
+			ApplicationTokenCredentials credentials = AuthUtil.getTokenCredential();
+			Azure azure = Azure.configure().withLogLevel(LogLevel.BASIC).authenticate(credentials).withDefaultSubscription();
+			
             System.out.println("Selected subscription: " + azure.subscriptionId());
 
             runSample(azure);
@@ -120,8 +115,6 @@ public class HealthTest {
             System.out.println("\tCorrelationId: " + event.correlationId());
             System.out.println("\tSubscriptionId: " + event.subscriptionId());
         }
-
-
     }
 
     private static void listMetrics(MetricDefinitions definitions, String id) {

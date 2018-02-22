@@ -19,9 +19,9 @@ public class VMMetricsUtils {
 		}
 		
         System.out.println("-- MetricCollection MetaData for Resource Id '" + resourceId + "':");
-        System.out.println("Query time: " + metricCollection.timespan());
-        System.out.println("Time Grain: " + metricCollection.interval());
-        System.out.println("Cost: " + metricCollection.cost());
+        //System.out.println("Query time: " + metricCollection.timespan());
+        //System.out.println("Time Grain: " + metricCollection.interval());
+        //System.out.println("Cost: " + metricCollection.cost());
 		
         for (Metric metric : metricCollection.metrics()) {
             System.out.println("\t-- Metric MetaData");

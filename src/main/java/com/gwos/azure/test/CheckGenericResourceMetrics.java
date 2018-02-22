@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 
+import com.gwos.azure.utils.AuthUtil;
 import com.gwos.azure.utils.VMMetricsUtils;
-import com.microsoft.azure.AzureEnvironment;
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.credentials.ApplicationTokenCredentials;
 import com.microsoft.azure.management.Azure;
+import com.microsoft.azure.management.monitor.AggregationType;
+import com.microsoft.azure.management.monitor.MetricAvailability;
 import com.microsoft.azure.management.monitor.MetricCollection;
 import com.microsoft.azure.management.monitor.MetricDefinition;
 import com.microsoft.azure.management.monitor.ResultType;
@@ -33,7 +35,7 @@ public class CheckGenericResourceMetrics {
 				System.out.println("Resource Id: " + genericResource.id());
 				System.out.println("Key: " + genericResource.key());
 				System.out.println("Name: " + genericResource.name());
-				System.out.println("ParentResourcePath: " + genericResource.parentResourcePath());
+//				System.out.println("ParentResourcePath: " + genericResource.parentResourcePath());
 //				System.out.println("RegionName: " + genericResource.regionName());
 				System.out.println("ResourceGroupName: " + genericResource.resourceGroupName());
 				System.out.println("ResourceProviderNamespace: " + genericResource.resourceProviderNamespace());
@@ -42,28 +44,29 @@ public class CheckGenericResourceMetrics {
 				System.out.println("---------------------------------------");
 				
 				if (genericResource.id().endsWith("providers/Microsoft.Sql/servers/gwos02sqldb")) {	// exclude providers/Microsoft.Sql/servers
-					System.out.println("Debu break Point");
+					System.out.println("Debug break Point - to check sqlserver");
 				}
-					List<MetricDefinition> metricDefinitions = azure.metricDefinitions().listByResource(genericResource.id());
-					for (MetricDefinition metricDefinition : metricDefinitions) {	
-						 try {
-					        // Query resource metrics
-					        MetricCollection metricCollection = metricDefinition.defineQuery()
-					                .startingFrom(recordDateTime.minusMinutes(5))	// last 10 minutes
-					                .endsBefore(recordDateTime)
-		                            //.withAggregation("Average")
-		                            //.withInterval(Period.minutes(5))				// Commented to use 1 minutes interval by default
-					                .withResultType(ResultType.DATA)
-					                .execute();
-				       
-				        	VMMetricsUtils.printMetricCollection(metricCollection, genericResource.id());
-				        } catch (Exception pf) {
-				        	pf.printStackTrace();
-				        }
-					}
+				List<MetricDefinition> metricDefinitions = azure.metricDefinitions().listByResource(genericResource.id());
+				for (MetricDefinition metricDefinition : metricDefinitions) {	
+					AggregationType aggregationType = metricDefinition.primaryAggregationType();
+					System.out.println("AggregationType : " + aggregationType.name());
+					List<MetricAvailability> availMetrics = metricDefinition.metricAvailabilities();
+					 try {
+				        // Query resource metrics
+				        MetricCollection metricCollection = metricDefinition.defineQuery()
+				                .startingFrom(recordDateTime.minusMinutes(5))	// last 10 minutes
+				                .endsBefore(recordDateTime)
+	                            //.withAggregation("Average, Total, Count")
+	                            //.withInterval(Period.minutes(5))				// Commented to use 1 minutes interval by default
+				                .withResultType(ResultType.DATA)
+				                .execute();
+			       
+			        	VMMetricsUtils.printMetricCollection(metricCollection, genericResource.id());
+			        } catch (Exception pf) {
+			        	pf.printStackTrace();
+			        }
 				}
-			//}
-
+			}
 			return true;
 		} catch (Exception f) {
 			f.printStackTrace();
@@ -75,28 +78,14 @@ public class CheckGenericResourceMetrics {
 	
 	public static void main(String[] args) {
 		try {
-			// https://docs.microsoft.com/en-us/java/azure/java-sdk-azure-authenticate
-			ApplicationTokenCredentials credentials = new ApplicationTokenCredentials(
-					"{Client Id}", 	
-			        "{Tenant Id}",	
-			        "{Client Secret}", 	
-			        AzureEnvironment.AZURE);
+//			final File credFile = AuthUtil.getCrendentialFile("AZURE_AUTH_LOCATION");
+//			Azure azure = Azure.configure().withLogLevel(LogLevel.NONE).authenticate(credFile).withDefaultSubscription();
 
-			Azure azure = Azure
-			        .configure()
-			        .withLogLevel(LogLevel.NONE)		//BASIC
-			        .authenticate(credentials)
-			        .withDefaultSubscription();
-			        //.withSubscription("GWosGroup02");
-			/*
-			// =============================================================
-			// Authenticate by a generated azure auth file configured in env. variable
-			final File credFile = new File(System.getenv("AZURE_AUTH_LOCATION"));
-
-			Azure azure = Azure.configure().withLogLevel(LogLevel.BASIC).authenticate(credFile).withDefaultSubscription();
-			*/
-			// Print selected subscription
+			ApplicationTokenCredentials credentials = AuthUtil.getTokenCredential();
+			Azure azure = Azure.configure().withLogLevel(LogLevel.BASIC).authenticate(credentials).withDefaultSubscription();
+			
 			System.out.println("Selected subscription: " + azure.subscriptionId());
+			
 			runMetrics02(azure);
 			
 		} catch (Exception e) {
