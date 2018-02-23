@@ -16,7 +16,7 @@ import com.microsoft.azure.management.monitor.MetricDefinition;
 import com.microsoft.azure.management.monitor.ResultType;
 import com.microsoft.rest.LogLevel;
 
-public class CheckAppServiceMetrics {
+public class CheckWebAppMetrics {
 	public static boolean runMetrics02(Azure azure) {		
         //DateTime recordDateTime = DateTime.parse("2018-01-24T00:07:40.350Z");
 		DateTime recordDateTime = DateTime.now();
